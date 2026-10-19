@@ -1,0 +1,2 @@
+/* Finder's right-click menu: the title of FyloX's service (NSServices in Info.plist). */
+"Convert with FyloX" = "FyloX로 변환";

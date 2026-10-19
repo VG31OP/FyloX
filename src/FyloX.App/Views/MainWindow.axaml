@@ -1,0 +1,90 @@
+﻿<!-- Main window = FyloX Studio Command Deck: Top command bar navigation + workspace -->
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:FyloX.App.ViewModels"
+        x:Class="FyloX.App.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="FyloX Studio"
+        Icon="avares://FyloX/Assets/Icons/fylox.ico"
+        Width="1080" Height="720" MinWidth="580" MinHeight="420"
+        WindowStartupLocation="CenterScreen"
+        ShowInTaskbar="True">
+  <Grid RowDefinitions="Auto,*">
+    <!-- Top Studio Command & Navigation Header -->
+    <Border Grid.Row="0" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource SubtleBorderBrush}" BorderThickness="0,0,0,1" Padding="14,8">
+      <Grid ColumnDefinitions="Auto,*,Auto">
+        <!-- Brand & Engine Status Indicator -->
+        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center" Margin="0,0,10,0">
+          <Border Width="32" Height="32" CornerRadius="4" Background="{DynamicResource SurfaceAltBrush}" BorderBrush="{DynamicResource SubtleBorderBrush}" BorderThickness="1">
+            <PathIcon Width="16" Height="16" Data="{StaticResource Icon.Tune}" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+          <StackPanel VerticalAlignment="Center" Spacing="1">
+            <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+              <TextBlock Text="FYLOX" FontWeight="Black" FontSize="14" LetterSpacing="1.2" />
+              <Border Background="{DynamicResource AccentBrush}" CornerRadius="3" Padding="4,1" VerticalAlignment="Center">
+                <TextBlock Text="STUDIO" FontSize="8" FontWeight="Black" Foreground="{DynamicResource OnAccentBrush}" />
+              </Border>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+              <Ellipse Width="5" Height="5" Fill="{DynamicResource SuccessBrush}" VerticalAlignment="Center" />
+              <TextBlock Classes="caption" Text="246 Engines • Offline" FontSize="10" />
+            </StackPanel>
+          </StackPanel>
+        </StackPanel>
+
+        <!-- Horizontal Studio Tabs Navigation (Scrollable horizontally for small screens / high DPI) -->
+        <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" HorizontalAlignment="Center" Margin="4,0">
+          <ListBox Classes="nav-horizontal" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" VerticalAlignment="Center">
+            <ListBox.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" Spacing="4" />
+              </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="vm:NavItem">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <PathIcon Width="13" Height="13" Data="{Binding Icon}" />
+                  <TextBlock Text="{Binding Title}" VerticalAlignment="Center" FontSize="12" />
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </ScrollViewer>
+
+        <!-- Right Quick Actions, Update Button, & Version -->
+        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Margin="6,0,0,0">
+          <Button x:Name="UpdateButton" Classes.accent="{Binding !Updates.IsOptional}"
+                  Command="{Binding DownloadUpdateCommand}" IsVisible="{Binding Updates.IsUpdateAvailable}"
+                  ToolTip.Tip="{Binding UpdateTip}" Padding="8,4">
+            <StackPanel Orientation="Horizontal" Spacing="5">
+              <PathIcon Width="12" Height="12" Data="{StaticResource Icon.Download}" />
+              <TextBlock Text="{Binding UpdateText}" FontSize="11" />
+            </StackPanel>
+          </Button>
+
+          <Button Classes="navlink" Click="OnOpenGitHub" ToolTip.Tip="{Binding RepositoryUrl}" Padding="6,4">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+              <PathIcon Width="12" Height="12" Data="{StaticResource Icon.GitHub}" />
+              <TextBlock Text="GitHub" FontSize="11" />
+            </StackPanel>
+          </Button>
+
+          <Button Classes="navlink" Click="OnSponsor" Padding="6,4">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+              <PathIcon Width="12" Height="12" Data="{StaticResource Icon.Heart}" Foreground="{DynamicResource AccentBrush}" />
+              <TextBlock Text="{DynamicResource about.sponsor}" FontSize="11" />
+            </StackPanel>
+          </Button>
+
+          <Border BorderBrush="{DynamicResource SubtleBorderBrush}" BorderThickness="1,0,0,0" Height="16" Margin="2,0" />
+          <TextBlock x:Name="VersionLabel" Classes="caption" Text="{Binding VersionText}" VerticalAlignment="Center" FontSize="10" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- Page Content Workspace: fully responsive on any resolution with dynamic scrolling -->
+    <ScrollViewer Grid.Row="1" x:Name="PageScroller" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+      <ContentControl Classes="page" Content="{Binding CurrentPage}" Margin="20,16" MaxWidth="1140" HorizontalAlignment="Stretch" />
+    </ScrollViewer>
+  </Grid>
+</Window>

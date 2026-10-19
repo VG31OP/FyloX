@@ -1,0 +1,57 @@
+﻿<!-- "Sponsor": GitHub Sponsors only -->
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:v="using:FyloX.App.Views"
+        x:Class="FyloX.App.Views.SponsorWindow"
+        Title="Sponsor FyloX • Vraj Shiroya"
+        Icon="avares://FyloX/Assets/Icons/fylox.ico"
+        Width="440" MinWidth="340" MaxHeight="620"
+        SizeToContent="Height"
+        CanResize="True"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        Background="{DynamicResource PageBrush}">
+  <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <Border Margin="14" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource SubtleBorderBrush}" BorderThickness="1" CornerRadius="{DynamicResource SoftRadius}" Padding="20">
+      <StackPanel Spacing="16">
+        <StackPanel Spacing="4">
+          <Border Background="{DynamicResource AccentSoftBrush}" CornerRadius="3" Padding="6,2" HorizontalAlignment="Left">
+            <TextBlock Text="GITHUB SPONSORS" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" />
+          </Border>
+          <TextBlock Classes="h2" Text="Sponsor FyloX Development" FontWeight="Bold" FontSize="17" />
+          <TextBlock Classes="caption" TextWrapping="Wrap" Text="FyloX is 100% free, local and open-source. Support Vraj Shiroya directly through GitHub Sponsors to help accelerate development." />
+        </StackPanel>
+
+        <Border Background="{DynamicResource SurfaceAltBrush}" BorderBrush="{DynamicResource SubtleBorderBrush}" BorderThickness="1" CornerRadius="{DynamicResource SoftRadius}" Padding="16">
+          <StackPanel Spacing="14">
+          <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+            <Border Width="40" Height="40" CornerRadius="4" Background="{DynamicResource AccentSoftBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1">
+              <PathIcon Width="20" Height="20" Data="{StaticResource Icon.GitHub}" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <StackPanel VerticalAlignment="Center" Spacing="2">
+              <TextBlock Text="Vraj Shiroya (@VG31OP)" FontWeight="Bold" FontSize="14" />
+              <TextBlock Classes="caption" Text="Monthly or one-time via GitHub Sponsors" />
+            </StackPanel>
+          </StackPanel>
+
+          <ItemsControl x:Name="Ways">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="v:SponsorWay">
+                <Button Classes="accent" Click="OnChoose" Tag="{Binding Url}" ToolTip.Tip="{Binding Url}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="14,9">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Width="14" Height="14" Data="{StaticResource Icon.Heart}" Foreground="{DynamicResource OnAccentBrush}" />
+                    <TextBlock Text="Sponsor on GitHub" FontWeight="Bold" Foreground="{DynamicResource OnAccentBrush}" />
+                  </StackPanel>
+                </Button>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
+
+      <v:SupportersView x:Name="Supporters" />
+      <TextBlock Classes="caption" TextWrapping="Wrap" Text="{DynamicResource sponsor.star}" />
+    </StackPanel>
+  </Border>
+  </ScrollViewer>
+</Window>

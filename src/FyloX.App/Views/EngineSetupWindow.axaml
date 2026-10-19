@@ -1,0 +1,79 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:FyloX.App.ViewModels"
+        xmlns:svc="using:FyloX.App.Services"
+        x:Class="FyloX.App.Views.EngineSetupWindow"
+        x:DataType="vm:EngineSetupViewModel"
+        Title="FyloX Studio • Conversion Engines Setup"
+        Width="620" MinWidth="420" MaxHeight="680" SizeToContent="Height" CanResize="True"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource PageBrush}">
+  <Border Margin="14" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource SubtleBorderBrush}" BorderThickness="1" CornerRadius="{DynamicResource SoftRadius}" Padding="20">
+    <Grid RowDefinitions="Auto,*,Auto,Auto">
+      <!-- Header -->
+      <StackPanel Grid.Row="0" Spacing="6" Margin="0,0,0,14">
+        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+          <Border Background="{DynamicResource AccentSoftBrush}" CornerRadius="3" Padding="6,2" VerticalAlignment="Center">
+            <TextBlock Text="ENGINE ROUTING" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" />
+          </Border>
+          <TextBlock Classes="caption" Text="• 246 LOCAL CODECS" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+        </StackPanel>
+        <TextBlock Classes="h1" Text="{DynamicResource setup.title}" FontSize="20" FontWeight="Bold" />
+        <TextBlock Classes="muted" TextWrapping="Wrap" Text="{DynamicResource setup.description}" FontSize="13" />
+      </StackPanel>
+
+      <!-- Engine Package Cards (Scrollable for compact screens) -->
+      <ScrollViewer Grid.Row="1" MaxHeight="360" VerticalScrollBarVisibility="Auto" Margin="0,0,0,12">
+        <ItemsControl ItemsSource="{Binding Packages}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Spacing="10" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="svc:EnginePackageState">
+            <Border Classes="card" Background="{DynamicResource SurfaceAltBrush}" BorderBrush="{DynamicResource SubtleBorderBrush}" BorderThickness="1" CornerRadius="{DynamicResource SoftRadiusSmall}" Padding="14,12">
+              <DockPanel>
+                <!-- Already installed packages cannot be ticked; ticking is locked once installation started. -->
+                <CheckBox DockPanel.Dock="Left" VerticalAlignment="Top" Margin="0,0,12,0"
+                          IsChecked="{Binding Selected}" IsEnabled="{Binding CanInstall}"
+                          IsVisible="{Binding !IsInstalled}" />
+                <Border DockPanel.Dock="Left" VerticalAlignment="Top" Margin="0,2,14,0" Width="20" Height="20" CornerRadius="4"
+                        Background="{DynamicResource AccentSoftBrush}" IsVisible="{Binding IsInstalled}">
+                  <PathIcon Width="12" Height="12" Data="{StaticResource Icon.Check}" Foreground="{DynamicResource SuccessBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <StackPanel Spacing="4">
+                  <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <TextBlock FontWeight="Bold" Text="{Binding Name}" FontSize="14" />
+                    <Border Classes="badge" Background="{DynamicResource PageBrush}" BorderBrush="{DynamicResource SubtleBorderBrush}" BorderThickness="1" CornerRadius="3" Padding="6,1">
+                      <TextBlock Classes="caption" Text="{Binding StatusText}" Foreground="{DynamicResource AccentBrush}" FontSize="11" FontWeight="SemiBold" />
+                    </Border>
+                  </StackPanel>
+                  <TextBlock Classes="caption" TextWrapping="Wrap" Text="{Binding Description}" FontSize="12" />
+                  <TextBlock Classes="caption" Text="{Binding Sizes}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" />
+                  <TextBlock Classes="caption" TextWrapping="Wrap" Text="{Binding InstallGuidance}"
+                             IsVisible="{Binding InstallGuidance, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                  <ProgressBar Classes="soft" Maximum="100" Value="{Binding Progress}" IsVisible="{Binding IsBusy}" Margin="0,4,0,0" Foreground="{DynamicResource AccentBrush}" />
+                  <TextBlock Classes="caption" Text="{Binding ProgressDetail}" IsVisible="{Binding ProgressDetail, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" Foreground="{DynamicResource AccentBrush}" />
+                </StackPanel>
+              </DockPanel>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+      </ScrollViewer>
+
+      <TextBlock Grid.Row="2" Classes="caption" TextWrapping="Wrap" Text="{DynamicResource setup.note}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="0,0,0,10" />
+
+      <Border Grid.Row="3" BorderBrush="{DynamicResource SubtleBorderBrush}" BorderThickness="0,1,0,0" Padding="0,12,0,0">
+        <DockPanel>
+          <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="10">
+            <Button Content="{Binding CloseText}" Command="{Binding CloseCommand}" Padding="16,7" />
+            <Button Classes="accent" Content="{DynamicResource setup.install}" Command="{Binding InstallCommand}" IsVisible="{Binding CanChoose}" Padding="18,7" FontWeight="Bold" />
+          </StackPanel>
+          <TextBlock Classes="muted" VerticalAlignment="Center" Text="{Binding SelectionText}" IsVisible="{Binding CanChoose}" FontSize="12" />
+        </DockPanel>
+      </Border>
+    </Grid>
+  </Border>
+</Window>

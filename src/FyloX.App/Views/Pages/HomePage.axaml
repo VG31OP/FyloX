@@ -1,0 +1,168 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:FyloX.App.ViewModels.Pages"
+             xmlns:app="using:FyloX.App.ViewModels"
+             x:Class="FyloX.App.Views.Pages.HomePage"
+             x:DataType="vm:HomePageViewModel">
+  <UserControl.Styles>
+    <Style Selector="Border#DropZone">
+      <Setter Property="Transitions">
+        <Transitions>
+          <BrushTransition Property="Background" Duration="0:0:0.2" />
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.3" Easing="BackEaseOut" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Border#DropZone.over">
+      <Setter Property="Background" Value="{DynamicResource AccentSoftBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="RenderTransform" Value="scale(1.015)" />
+    </Style>
+    <Style Selector="PathIcon.chevron">
+      <Setter Property="RenderTransform" Value="rotate(0deg)" />
+    </Style>
+    <Style Selector="PathIcon.chevron.open">
+      <Setter Property="RenderTransform" Value="rotate(90deg)" />
+    </Style>
+  </UserControl.Styles>
+
+  <StackPanel Spacing="22">
+    <TextBlock Classes="h1" Text="{DynamicResource home.title}" />
+
+    <!-- macOS without Accessibility permission: the drag gesture can't work yet. Gone once it is given. -->
+    <Border IsVisible="{Binding NeedsAccessibility}" Background="{DynamicResource AccentFaintBrush}"
+            BorderBrush="{DynamicResource AccentSoftBrush}" BorderThickness="1" CornerRadius="{DynamicResource SoftRadius}" Padding="14,10">
+      <DockPanel>
+        <Button DockPanel.Dock="Right" VerticalAlignment="Center" Margin="12,0,0,0" Classes="accent"
+                Content="{DynamicResource triggers.open_accessibility}" Command="{Binding OpenAccessibilityCommand}" />
+        <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Text="{DynamicResource home.accessibility_needed}" />
+      </DockPanel>
+    </Border>
+
+    <!-- Windows: FyloX runs as administrator while Explorer doesn't. Explorer can't drop files here, use the menu or
+         have its selection read until FyloX runs with normal rights again. -->
+    <Border IsVisible="{Binding IsElevated}" Background="{DynamicResource AccentFaintBrush}"
+            BorderBrush="{DynamicResource DangerBrush}" BorderThickness="1" CornerRadius="{DynamicResource SoftRadius}" Padding="14,10">
+      <DockPanel>
+        <Button DockPanel.Dock="Right" VerticalAlignment="Center" Margin="12,0,0,0" Classes="accent"
+                Content="{DynamicResource home.elevated_restart}" Command="{Binding RestartWithoutAdministratorRightsCommand}" />
+        <StackPanel Spacing="6" VerticalAlignment="Center">
+          <TextBlock TextWrapping="Wrap" Text="{DynamicResource home.elevated}" />
+          <TextBlock Classes="caption danger" TextWrapping="Wrap" IsVisible="{Binding ElevationRestartFailed}"
+                     Text="{DynamicResource home.elevated_restart_failed}" />
+        </StackPanel>
+      </DockPanel>
+    </Border>
+
+    <!-- HUD Industrial Drop Zone: files dropped here or clicked open the donut toolbar at cursor -->
+    <Border x:Name="DropZone" DragDrop.AllowDrop="True" MinHeight="230"
+            Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource SubtleBorderBrush}"
+            BorderThickness="1" CornerRadius="{DynamicResource SoftRadius}" Padding="28"
+            Cursor="Hand" PointerPressed="OnDropZonePointerPressed">
+      <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
+        <Border Width="56" Height="56" CornerRadius="4" Background="{DynamicResource AccentSoftBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" HorizontalAlignment="Center">
+          <PathIcon Width="26" Height="26" Data="{StaticResource Icon.Upload}" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        </Border>
+        <TextBlock Classes="h2" HorizontalAlignment="Center" Text="{DynamicResource home.drop_title}" FontSize="18" FontWeight="Bold" />
+        <TextBlock Classes="muted" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="500"
+                   Text="{Binding DropHint}" FontSize="13" />
+
+        <Button Classes="accent" Click="OnBrowseFiles" Margin="0,4,0,0" Padding="18,8" Cursor="Hand">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <PathIcon Width="14" Height="14" Data="{StaticResource Icon.Folder}" Foreground="{DynamicResource OnAccentBrush}" />
+            <TextBlock Text="Browse &amp; Convert Files…" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource OnAccentBrush}" />
+          </StackPanel>
+        </Button>
+
+        <Border Margin="0,6,0,0" Background="{DynamicResource SurfaceAltBrush}" CornerRadius="4" Padding="14,6" HorizontalAlignment="Center">
+          <StackPanel Orientation="Horizontal" Spacing="14">
+            <TextBlock Classes="caption" Text="⚡ 246 FORMATS" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" />
+            <TextBlock Classes="caption" Text="•" Foreground="{DynamicResource SubtleBorderBrush}" />
+            <TextBlock Classes="caption" Text="🔒 100% LOCAL &amp; OFFLINE" FontWeight="SemiBold" />
+            <TextBlock Classes="caption" Text="•" Foreground="{DynamicResource SubtleBorderBrush}" />
+            <TextBlock Classes="caption" Text="🎯 INSTANT CURSOR HUD" FontWeight="SemiBold" />
+          </StackPanel>
+        </Border>
+      </StackPanel>
+    </Border>
+
+    <!-- Recent conversions -->
+    <StackPanel Spacing="10">
+      <DockPanel>
+        <Button DockPanel.Dock="Right" Classes="ghost" Content="{DynamicResource home.clear_history}" Command="{Binding ClearHistoryCommand}" />
+        <TextBlock Classes="h2" VerticalAlignment="Center" Text="{DynamicResource home.recent}" />
+      </DockPanel>
+      <TextBlock Classes="muted" Text="{DynamicResource home.recent_empty}" IsVisible="{Binding IsEmpty}" />
+      <ItemsControl ItemsSource="{Binding History}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Spacing="8" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:HistoryItemViewModel">
+            <Border Classes="card" Padding="14,10">
+              <StackPanel Spacing="8">
+                <DockPanel>
+                  <Button DockPanel.Dock="Right" Command="{Binding OpenFolderCommand}" IsVisible="{Binding HasOutputs}" Padding="10,5">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                      <PathIcon Width="13" Height="13" Data="{StaticResource Icon.Folder}" />
+                      <TextBlock Text="{DynamicResource home.open_folder}" />
+                    </StackPanel>
+                  </Button>
+                  <Border DockPanel.Dock="Left" Width="32" Height="32" CornerRadius="999" Margin="0,0,12,0"
+                          Background="{DynamicResource AccentSoftBrush}">
+                    <Panel>
+                      <PathIcon Width="15" Height="15" Data="{StaticResource Icon.Check}" Foreground="{DynamicResource AccentStrongBrush}" IsVisible="{Binding !HasErrors}" />
+                      <PathIcon Width="15" Height="15" Data="{StaticResource Icon.Alert}" Foreground="{DynamicResource DangerBrush}" IsVisible="{Binding HasErrors}" />
+                    </Panel>
+                  </Border>
+                  <StackPanel VerticalAlignment="Center">
+                    <TextBlock FontWeight="SemiBold" Text="{Binding Title}" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Classes="caption" Text="{Binding Subtitle}" TextTrimming="CharacterEllipsis" MaxWidth="420" />
+                      <TextBlock Classes="caption" Text="·" />
+                      <TextBlock Classes="caption" Text="{Binding Time}" />
+                    </StackPanel>
+                  </StackPanel>
+                </DockPanel>
+
+                <!-- Failed files: the list on demand, and converting them again -->
+                <DockPanel IsVisible="{Binding HasFailures}" Margin="44,0,0,0">
+                  <Button DockPanel.Dock="Right" Command="{Binding RetryCommand}" IsVisible="{Binding CanRetry}" Padding="10,5">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                      <PathIcon Width="13" Height="13" Data="{StaticResource Icon.Refresh}" />
+                      <TextBlock Text="{DynamicResource common.retry}" />
+                    </StackPanel>
+                  </Button>
+                  <Button Classes="ghost" Command="{Binding ToggleFailuresCommand}" Padding="6,4" HorizontalAlignment="Left">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                      <PathIcon Classes="chevron" Classes.open="{Binding ShowFailures}" Width="12" Height="12"
+                                Data="{StaticResource Icon.ChevronRight}" />
+                      <TextBlock Classes="caption danger" Text="{Binding FailureSummary}" />
+                    </StackPanel>
+                  </Button>
+                </DockPanel>
+                <ItemsControl ItemsSource="{Binding Failures}" IsVisible="{Binding ShowFailures}" Margin="50,0,0,2">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <StackPanel Spacing="4" />
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="app:FailureItem">
+                      <StackPanel>
+                        <SelectableTextBlock Classes="caption" FontWeight="SemiBold" Text="{Binding Name}" TextWrapping="Wrap" />
+                        <SelectableTextBlock Classes="caption danger" Text="{Binding Reason}" TextWrapping="Wrap" />
+                      </StackPanel>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </StackPanel>
+  </StackPanel>
+</UserControl>

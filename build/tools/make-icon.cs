@@ -1,0 +1,54 @@
+﻿// Generates src/FyloX.App/Assets/Icons/fylox.ico and fylox.png (the donut logo).
+// Run from the repository root:  dotnet run build/tools/make-icon.cs
+#:package Magick.NET-Q8-AnyCPU
+
+using System.Globalization;
+using System.Text;
+using ImageMagick;
+
+
+var svg = new StringBuilder(@"<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'>
+  <!-- Dark carbon industrial squircle container with crisp accent edge -->
+  <rect x='24' y='24' width='464' height='464' rx='108' fill='#0B0F17' stroke='#1E293B' stroke-width='8'/>
+  
+  <!-- Subtle inner ambient perimeter line -->
+  <rect x='34' y='34' width='444' height='444' rx='98' fill='none' stroke='#F59E0B' stroke-width='2' stroke-opacity='0.35'/>
+
+  <!-- Primary Solar Amber Diagonal Blade (Top-Left to Bottom-Right) -->
+  <path fill='#F59E0B' d='M 128 136 L 210 136 L 384 376 L 302 376 Z'/>
+
+  <!-- Faceted Highlights on Primary Blade -->
+  <path fill='#FBBF24' d='M 128 136 L 210 136 L 274 226 L 232 226 Z'/>
+  <path fill='#D97706' d='M 280 286 L 322 286 L 384 376 L 302 376 Z'/>
+
+  <!-- Intersecting Counter Diagonal (Top-Right Segment) -->
+  <path fill='#F59E0B' d='M 384 136 L 302 136 L 278 174 L 324 232 Z'/>
+  <path fill='#FBBF24' d='M 384 136 L 340 136 L 278 174 Z'/>
+
+  <!-- Intersecting Counter Diagonal (Bottom-Left Segment) -->
+  <path fill='#D97706' d='M 128 376 L 210 376 L 234 338 L 188 280 Z'/>
+  <path fill='#B45309' d='M 128 376 L 172 376 L 234 338 Z'/>
+
+  <!-- Central Precision Core Spark (Faceted Conversion Diamond) -->
+  <polygon points='256,222 286,256 256,290 226,256' fill='#FEF3C7'/>
+  <polygon points='256,230 276,256 256,282 236,256' fill='#F59E0B'/>
+
+  <!-- Technical Transformation Node Dots -->
+  <circle cx='128' cy='136' r='6' fill='#FBBF24'/>
+  <circle cx='384' cy='376' r='6' fill='#D97706'/>
+  <circle cx='384' cy='136' r='6' fill='#FBBF24'/>
+  <circle cx='128' cy='376' r='6' fill='#D97706'/>
+</svg>");
+
+var outDir = Path.Combine("src", "FyloX.App", "Assets", "Icons");
+Directory.CreateDirectory(outDir);
+File.WriteAllText(Path.Combine(outDir, "fylox.svg"), svg.ToString());
+
+var settings = new MagickReadSettings { BackgroundColor = MagickColors.Transparent, Format = MagickFormat.Svg };
+using var master = new MagickImage(Encoding.UTF8.GetBytes(svg.ToString()), settings);
+master.Write(Path.Combine(outDir, "fylox.png"), MagickFormat.Png);
+
+// One image + "auto-resize" makes ImageMagick embed every size into a single .ico file.
+master.Settings.SetDefine(MagickFormat.Icon, "auto-resize", "256,64,48,32,24,16");
+master.Write(Path.Combine(outDir, "fylox.ico"), MagickFormat.Icon);
+Console.WriteLine($"Icons written to {outDir}");

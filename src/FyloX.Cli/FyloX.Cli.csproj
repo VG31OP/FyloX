@@ -1,0 +1,27 @@
+﻿<!--
+  FyloX.Cli: the "fylox" command line. Converts files and watches folders without the tray app, with the same
+  engines, presets and settings. Published next to FyloX.exe as fylox-cli.exe (one runtime for both); the installer
+  puts a "fylox" shim on PATH (cli\fylox.cmd).
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>fylox-cli</AssemblyName>
+    <RootNamespace>FyloX.Cli</RootNamespace>
+    <ApplicationIcon>..\FyloX.App\Assets\Icons\fylox.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FyloX.Core\FyloX.Core.csproj" />
+    <ProjectReference Include="..\FyloX.Engines\FyloX.Engines.csproj" />
+  </ItemGroup>
+
+  <!-- Error messages and built-in preset names, in English (the app's translation file). -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\FyloX.App\Assets\i18n\en.json" LogicalName="FyloX.Cli.en.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="FyloX.Cli.Tests" />
+  </ItemGroup>
+</Project>
