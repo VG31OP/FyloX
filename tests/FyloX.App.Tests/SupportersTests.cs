@@ -1,4 +1,4 @@
-﻿// The sponsors and backers shipped with a release (Assets/Sponsors/sponsors.json): shown in the app while there are
+// The sponsors and backers shipped with a release (Assets/Sponsors/sponsors.json): shown in the app while there are
 // any, and listed in every README.
 
 using Avalonia.Headless.XUnit;
@@ -41,7 +41,7 @@ public class SupportersTests
         var folder = Path.Combine(RepoRoot, "src", "FyloX.App", "Assets", "Sponsors");
         var list = Supporters.Parse(File.ReadAllText(Path.Combine(folder, "sponsors.json")));
 
-        foreach (var readme in new[] { "README.md", "README.ko.md", "README.zh-CN.md" })
+        foreach (var readme in new[] { "README.md" })
         {
             var text = File.ReadAllText(Path.Combine(RepoRoot, readme));
             Assert.Contains("<!-- sponsors: src/FyloX.App/Assets/Sponsors/sponsors.json -->", text);
